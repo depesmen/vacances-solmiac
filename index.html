@@ -448,6 +448,13 @@
 </head>
 <body>
 
+<!-- Loading overlay -->
+<div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(253,246,238,0.75); z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:0.75rem; font-family:sans-serif; font-size:0.9rem; color:#a5612a;">
+  <div style="width:32px; height:32px; border:3px solid #e0d5c8; border-top-color:#c97d3a; border-radius:50%; animation:spin 0.7s linear infinite;"></div>
+  Synchronisation…
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
 <header>
   <span class="sun">☀️</span>
   <h1>Vacances à Solmiac</h1>
@@ -532,17 +539,32 @@
 <script>
   const TOTAL = 7775;
   const NIGHTS = 7;
+  const BIN_ID = '6a3e7c84da38895dfe02c8d8';
+  const API_KEY = '$2a$10$Lpok5UHZhAXq.TrUlE456OC/j08DMGEkMydYHNGQzR5oVEd0aYoty';
+  const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-  function loadData() {
-    try {
-      return JSON.parse(localStorage.getItem('solmiac2026') || '{"participants":[],"calculated":false}');
-    } catch(e) {
-      return { participants: [], calculated: false };
-    }
+  let cache = null;
+
+  async function loadData() {
+    const res = await fetch(`${BIN_URL}/latest`, {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const json = await res.json();
+    cache = json.record;
+    return cache;
   }
 
-  function saveData(data) {
-    localStorage.setItem('solmiac2026', JSON.stringify(data));
+  async function saveData(data) {
+    cache = data;
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: { 'X-Master-Key': API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  }
+
+  function setLoading(on) {
+    document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none';
   }
 
   function initial(name) {
@@ -553,8 +575,7 @@
     return n === 1 ? '1 nuit' : `${n} nuits`;
   }
 
-  function renderParticipants() {
-    const data = loadData();
+  function renderParticipants(data) {
     const list = document.getElementById('participants-list');
     const calcSection = document.getElementById('calculate-section');
 
@@ -584,8 +605,7 @@
     calcSection.style.display = 'flex';
   }
 
-  function renderResults() {
-    const data = loadData();
+  function renderResults(data) {
     if (!data.calculated || data.participants.length === 0) {
       document.getElementById('results-section').style.display = 'none';
       return;
@@ -598,7 +618,6 @@
 
     const resultsList = document.getElementById('results-list');
 
-    // Total bar
     const collectedRaw = data.participants.reduce((s, p) => s + (p.paid ? p.nights * nightRate : 0), 0);
     const collected = Math.round(collectedRaw * 100) / 100;
 
@@ -660,7 +679,7 @@
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function addParticipant() {
+  async function addParticipant() {
     const nameInput = document.getElementById('input-name');
     const staySelect = document.getElementById('input-stay');
     const name = nameInput.value.trim();
@@ -670,54 +689,62 @@
       setTimeout(() => nameInput.style.borderColor = '', 1500);
       return;
     }
-
-    const data = loadData();
-    data.participants.push({ name, nights: parseInt(staySelect.value), paid: false, paidDate: null });
-    data.calculated = false;
-    saveData(data);
-
     nameInput.value = '';
-    nameInput.focus();
     staySelect.value = '7';
-
-    renderParticipants();
+    setLoading(true);
+    const data = await loadData();
+    data.participants.push({ name, nights: parseInt(staySelect.value) || 7, paid: false, paidDate: null });
+    data.calculated = false;
+    await saveData(data);
+    setLoading(false);
+    renderParticipants(data);
     document.getElementById('results-section').style.display = 'none';
+    nameInput.focus();
   }
 
-  function removeParticipant(i) {
-    const data = loadData();
+  async function removeParticipant(i) {
+    setLoading(true);
+    const data = await loadData();
     data.participants.splice(i, 1);
     data.calculated = false;
-    saveData(data);
-    renderParticipants();
+    await saveData(data);
+    setLoading(false);
+    renderParticipants(data);
     document.getElementById('results-section').style.display = 'none';
   }
 
-  function calculateShares() {
-    const data = loadData();
-    if (data.participants.length === 0) return;
+  async function calculateShares() {
+    setLoading(true);
+    const data = await loadData();
+    if (data.participants.length === 0) { setLoading(false); return; }
     data.calculated = true;
-    saveData(data);
-    renderParticipants();
-    renderResults();
+    await saveData(data);
+    setLoading(false);
+    renderParticipants(data);
+    renderResults(data);
     document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function togglePaid(i, checked) {
-    const data = loadData();
+  async function togglePaid(i, checked) {
     const dateInput = document.getElementById(`date-${i}`);
     const dateVal = dateInput ? dateInput.value : getTodayStr();
+    setLoading(true);
+    const data = await loadData();
     data.participants[i].paid = checked;
     data.participants[i].paidDate = checked ? formatDateFr(dateVal) : null;
-    saveData(data);
-    renderParticipants();
-    renderResults();
+    await saveData(data);
+    setLoading(false);
+    renderParticipants(data);
+    renderResults(data);
   }
 
-  function resetAll() {
+  async function resetAll() {
     if (!confirm('Effacer tous les participants et recommencer ?')) return;
-    saveData({ participants: [], calculated: false });
-    renderParticipants();
+    setLoading(true);
+    const empty = { participants: [], calculated: false };
+    await saveData(empty);
+    setLoading(false);
+    renderParticipants(empty);
     document.getElementById('results-section').style.display = 'none';
   }
 
@@ -754,10 +781,14 @@
     if (e.key === 'Enter') addParticipant();
   });
 
-  // Init
-  const state = loadData();
-  renderParticipants();
-  if (state.calculated) renderResults();
+  // Init — load from JSONBin and render
+  (async () => {
+    setLoading(true);
+    const data = await loadData();
+    setLoading(false);
+    renderParticipants(data);
+    if (data.calculated) renderResults(data);
+  })();
 </script>
 </body>
 </html>
