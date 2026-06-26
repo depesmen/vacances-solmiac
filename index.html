@@ -518,7 +518,7 @@
 
 <!-- Liste des participants -->
 <div class="card" id="list-section">
-  <h2>Participants</h2>
+  <h2>Participants <span id="participant-count" style="font-size:0.85rem; background:#e0d5c8; color:#a5612a; border-radius:20px; padding:0.15rem 0.6rem; font-family:sans-serif; font-weight:600; vertical-align:middle;"></span></h2>
   <div class="participants-list" id="participants-list">
     <p class="empty-state">Aucun participant pour l'instant.</p>
   </div>
@@ -578,6 +578,8 @@
   function renderParticipants(data) {
     const list = document.getElementById('participants-list');
     const calcSection = document.getElementById('calculate-section');
+    const count = document.getElementById('participant-count');
+    count.textContent = data.participants.length > 0 ? `${data.participants.length} personne${data.participants.length > 1 ? 's' : ''}` : '';
 
     if (data.participants.length === 0) {
       list.innerHTML = '<p class="empty-state">Aucun participant pour l\'instant.</p>';
