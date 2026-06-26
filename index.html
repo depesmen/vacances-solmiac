@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vacances à Solmiac — 8–15 août 2026</title>
+  <style>
+    :root {
+      --bg: #fdf6ee;
+      --card: #fff;
+      --primary: #c97d3a;
+      --primary-dark: #a5612a;
+      --accent: #4a7c59;
+      --accent-light: #e8f3ec;
+      --text: #2d2d2d;
+      --muted: #888;
+      --border: #e0d5c8;
+      --danger: #c0392b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: var(--primary-dark);
+      letter-spacing: 0.02em;
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-style: italic;
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 20px;
+      padding: 0.25rem 1rem;
+      font-size: 0.85rem;
+      margin-top: 0.6rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 680px;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.6rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: sans-serif;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fafaf8;
+      color: var(--text);
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .duration-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .duration-row select { flex: 1; }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.08s;
+    }
+
+    button:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-success {
+      background: var(--accent);
+      color: #fff;
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    .btn-success:hover { background: #3a6447; }
+
+    .btn-danger {
+      background: none;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .btn-danger:hover { background: #fdf0ef; }
+
+    .btn-reset {
+      background: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+    }
+    .btn-reset:hover { background: #f5f0eb; }
+
+    /* Participants list */
+    .participants-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .participant-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #fafaf8;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: sans-serif;
+    }
+
+    .participant-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .participant-info { flex: 1; }
+    .participant-name { font-weight: 600; font-size: 0.95rem; }
+    .participant-days { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* Results */
+    .result-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 0.75rem;
+      font-family: sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    .result-item.paid {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .result-name { font-weight: 700; font-size: 1rem; flex: 1; }
+
+    .result-amount {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .result-detail {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .paid-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .paid-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .paid-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .paid-date-input {
+      max-width: 160px;
+    }
+
+    .paid-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 20px;
+      padding: 0.2rem 0.75rem;
+      font-size: 0.78rem;
+      font-family: sans-serif;
+    }
+
+    .total-bar {
+      background: var(--primary-dark);
+      color: #fff;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: sans-serif;
+      margin-bottom: 0.75rem;
+    }
+
+    .total-bar span { font-size: 0.9rem; opacity: 0.85; }
+    .total-bar strong { font-size: 1.2rem; }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+      padding: 1rem 0;
+      font-family: sans-serif;
+      font-size: 0.9rem;
+    }
+
+    .section-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .sun { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
+
+    /* Countdown */
+    .countdown-card {
+      background: #1a1a2e;
+      border: none;
+      border-radius: 14px;
+      padding: 1.4rem 1.5rem;
+      max-width: 680px;
+      margin: 0 auto 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .countdown-label {
+      color: #aaa;
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .countdown-units {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-number {
+      font-size: 2.4rem;
+      font-weight: 700;
+      font-family: 'Georgia', serif;
+      color: #fff;
+      line-height: 1;
+      min-width: 2.5ch;
+    }
+
+    .countdown-sep {
+      font-size: 2rem;
+      color: #555;
+      font-weight: 300;
+      line-height: 1.1;
+      align-self: flex-start;
+      padding-top: 0.1rem;
+    }
+
+    .countdown-sublabel {
+      font-size: 0.65rem;
+      color: #777;
+      font-family: sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.3rem;
+    }
+
+    .countdown-footer {
+      color: #e2a95a;
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      margin-top: 0.6rem;
+      font-style: italic;
+    }
+
+    .countdown-done {
+      color: #e74c3c;
+      font-size: 1rem;
+      font-family: sans-serif;
+      font-weight: 600;
+    }
+
+    /* Participants coloring when results exist */
+    .participant-item.status-paid {
+      background: #e8f3ec;
+      border-color: #4a7c59;
+    }
+
+    .participant-item.status-unpaid {
+      background: #fdf0ef;
+      border-color: #c0392b;
+    }
+
+    .participant-item.status-paid .participant-avatar {
+      background: #4a7c59;
+    }
+
+    .participant-item.status-unpaid .participant-avatar {
+      background: #c0392b;
+    }
+
+    .participant-item.status-paid .participant-name {
+      color: #2d6b3e;
+    }
+
+    .participant-item.status-unpaid .participant-name {
+      color: #a02020;
+    }
+
+    .status-tag {
+      font-size: 0.72rem;
+      font-family: sans-serif;
+      border-radius: 20px;
+      padding: 0.15rem 0.6rem;
+      font-weight: 600;
+    }
+
+    .status-tag.paid { background: #4a7c59; color: #fff; }
+    .status-tag.unpaid { background: #c0392b; color: #fff; }
+
+    /* Result items */
+    .result-item.unpaid {
+      border-color: #e8b4b0;
+      background: #fdf5f5;
+    }
+
+    .result-item.unpaid .participant-avatar {
+      background: #c0392b;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.5rem; }
+      .form-row { flex-direction: column; }
+      .result-amount { font-size: 1.1rem; }
+      .countdown-number { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="sun">☀️</span>
+  <h1>Vacances à Solmiac</h1>
+  <p>8 – 15 août 2026</p>
+  <span class="badge">Location : 7 775 €</span>
+</header>
+
+<!-- Compte à rebours -->
+<div class="countdown-card" id="countdown-card">
+  <div class="countdown-label">Plus que</div>
+  <div class="countdown-units" id="countdown-units">
+    <div class="countdown-unit">
+      <span class="countdown-number" id="cd-days">--</span>
+      <span class="countdown-sublabel">jours</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit">
+      <span class="countdown-number" id="cd-hours">--</span>
+      <span class="countdown-sublabel">heures</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit">
+      <span class="countdown-number" id="cd-mins">--</span>
+      <span class="countdown-sublabel">minutes</span>
+    </div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit">
+      <span class="countdown-number" id="cd-secs">--</span>
+      <span class="countdown-sublabel">secondes</span>
+    </div>
+  </div>
+  <div class="countdown-footer">avant le prélèvement Airbnb — 25 juillet 2026</div>
+</div>
+
+<!-- Ajouter un participant -->
+<div class="card" id="add-section">
+  <h2>Ajouter un participant</h2>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="input-name">Prénom / Nom</label>
+      <input type="text" id="input-name" placeholder="Ex : Sophie" />
+    </div>
+    <div class="form-group">
+      <label for="input-stay">Durée du séjour</label>
+      <select id="input-stay">
+        <option value="7">Tout le séjour (7 nuits)</option>
+        <option value="6">6 nuits</option>
+        <option value="5">5 nuits</option>
+        <option value="4">4 nuits</option>
+        <option value="3">3 nuits</option>
+        <option value="2">2 nuits</option>
+        <option value="1">1 nuit</option>
+      </select>
+    </div>
+    <div class="form-group" style="flex: 0 0 auto;">
+      <label>&nbsp;</label>
+      <button class="btn-primary" onclick="addParticipant()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Liste des participants -->
+<div class="card" id="list-section">
+  <h2>Participants</h2>
+  <div class="participants-list" id="participants-list">
+    <p class="empty-state">Aucun participant pour l'instant.</p>
+  </div>
+  <div class="section-actions" id="calculate-section" style="display:none; margin-top:1rem;">
+    <button class="btn-reset" onclick="resetAll()">Tout effacer</button>
+    <button class="btn-success" onclick="calculateShares()" style="width:auto; padding: 0.6rem 1.4rem;">
+      Calculer les participations →
+    </button>
+  </div>
+</div>
+
+<!-- Résultats -->
+<div class="card" id="results-section" style="display:none;">
+  <h2>Participations</h2>
+  <div id="results-list"></div>
+</div>
+
+<script>
+  const TOTAL = 7775;
+  const NIGHTS = 7;
+
+  function loadData() {
+    try {
+      return JSON.parse(localStorage.getItem('solmiac2026') || '{"participants":[],"calculated":false}');
+    } catch(e) {
+      return { participants: [], calculated: false };
+    }
+  }
+
+  function saveData(data) {
+    localStorage.setItem('solmiac2026', JSON.stringify(data));
+  }
+
+  function initial(name) {
+    return name.trim().charAt(0).toUpperCase();
+  }
+
+  function pluralNuits(n) {
+    return n === 1 ? '1 nuit' : `${n} nuits`;
+  }
+
+  function renderParticipants() {
+    const data = loadData();
+    const list = document.getElementById('participants-list');
+    const calcSection = document.getElementById('calculate-section');
+
+    if (data.participants.length === 0) {
+      list.innerHTML = '<p class="empty-state">Aucun participant pour l\'instant.</p>';
+      calcSection.style.display = 'none';
+      return;
+    }
+
+    list.innerHTML = data.participants.map((p, i) => {
+      const statusClass = data.calculated ? (p.paid ? 'status-paid' : 'status-unpaid') : '';
+      const statusTag = data.calculated
+        ? (p.paid ? '<span class="status-tag paid">✓ Payé</span>' : '<span class="status-tag unpaid">✗ En attente</span>')
+        : '';
+      return `
+      <div class="participant-item ${statusClass}">
+        <div class="participant-avatar">${initial(p.name)}</div>
+        <div class="participant-info">
+          <div class="participant-name">${escHtml(p.name)}</div>
+          <div class="participant-days">${p.nights === NIGHTS ? 'Tout le séjour' : pluralNuits(p.nights)}</div>
+        </div>
+        ${statusTag}
+        <button class="btn-danger" onclick="removeParticipant(${i})">✕</button>
+      </div>
+    `;}).join('');
+
+    calcSection.style.display = 'flex';
+  }
+
+  function renderResults() {
+    const data = loadData();
+    if (!data.calculated || data.participants.length === 0) {
+      document.getElementById('results-section').style.display = 'none';
+      return;
+    }
+
+    const totalNights = data.participants.reduce((s, p) => s + p.nights, 0);
+    const nightRate = TOTAL / totalNights;
+
+    document.getElementById('results-section').style.display = 'block';
+
+    const resultsList = document.getElementById('results-list');
+
+    // Total bar
+    const collectedRaw = data.participants.reduce((s, p) => s + (p.paid ? p.nights * nightRate : 0), 0);
+    const collected = Math.round(collectedRaw * 100) / 100;
+
+    let html = `
+      <div class="total-bar">
+        <span>Total collecté</span>
+        <strong>${collected.toFixed(2)} € / ${TOTAL} €</strong>
+      </div>
+    `;
+
+    html += data.participants.map((p, i) => {
+      const amount = Math.round(p.nights * nightRate * 100) / 100;
+      const paidClass = p.paid ? 'paid' : 'unpaid';
+      const paidBadge = p.paid ? `<span class="paid-badge">✓ Payé le ${p.paidDate}</span>` : '';
+
+      return `
+        <div class="result-item ${paidClass}" id="result-${i}">
+          <div class="result-header">
+            <div class="participant-avatar">${initial(p.name)}</div>
+            <div class="result-name">${escHtml(p.name)}</div>
+            <div class="result-amount">${amount.toFixed(2)} €</div>
+          </div>
+          <div class="result-detail">
+            ${p.nights === NIGHTS ? 'Tout le séjour' : pluralNuits(p.nights)}
+            — ${p.nights} nuit${p.nights > 1 ? 's' : ''} × ${nightRate.toFixed(2)} €/nuit
+          </div>
+          <div class="paid-row">
+            <label class="paid-checkbox">
+              <input type="checkbox" ${p.paid ? 'checked' : ''} onchange="togglePaid(${i}, this.checked)" />
+              Participation payée
+            </label>
+            ${!p.paid ? `
+              <input type="date"
+                class="paid-date-input"
+                id="date-${i}"
+                value="${getTodayStr()}"
+                style="max-width:160px; font-size:0.85rem;"
+              />
+            ` : paidBadge}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    resultsList.innerHTML = html;
+  }
+
+  function getTodayStr() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function formatDateFr(isoStr) {
+    if (!isoStr) return '';
+    const [y, m, d] = isoStr.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function addParticipant() {
+    const nameInput = document.getElementById('input-name');
+    const staySelect = document.getElementById('input-stay');
+    const name = nameInput.value.trim();
+    if (!name) {
+      nameInput.focus();
+      nameInput.style.borderColor = '#c0392b';
+      setTimeout(() => nameInput.style.borderColor = '', 1500);
+      return;
+    }
+
+    const data = loadData();
+    data.participants.push({ name, nights: parseInt(staySelect.value), paid: false, paidDate: null });
+    data.calculated = false;
+    saveData(data);
+
+    nameInput.value = '';
+    nameInput.focus();
+    staySelect.value = '7';
+
+    renderParticipants();
+    document.getElementById('results-section').style.display = 'none';
+  }
+
+  function removeParticipant(i) {
+    const data = loadData();
+    data.participants.splice(i, 1);
+    data.calculated = false;
+    saveData(data);
+    renderParticipants();
+    document.getElementById('results-section').style.display = 'none';
+  }
+
+  function calculateShares() {
+    const data = loadData();
+    if (data.participants.length === 0) return;
+    data.calculated = true;
+    saveData(data);
+    renderParticipants();
+    renderResults();
+    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function togglePaid(i, checked) {
+    const data = loadData();
+    const dateInput = document.getElementById(`date-${i}`);
+    const dateVal = dateInput ? dateInput.value : getTodayStr();
+    data.participants[i].paid = checked;
+    data.participants[i].paidDate = checked ? formatDateFr(dateVal) : null;
+    saveData(data);
+    renderParticipants();
+    renderResults();
+  }
+
+  function resetAll() {
+    if (!confirm('Effacer tous les participants et recommencer ?')) return;
+    saveData({ participants: [], calculated: false });
+    renderParticipants();
+    document.getElementById('results-section').style.display = 'none';
+  }
+
+  // Countdown to July 25, 2026 00:00:00
+  const AIRBNB_DATE = new Date('2026-07-25T00:00:00');
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = AIRBNB_DATE - now;
+
+    if (diff <= 0) {
+      document.getElementById('countdown-units').innerHTML =
+        '<p class="countdown-done">Le prélèvement Airbnb a eu lieu !</p>';
+      document.querySelector('.countdown-footer').style.display = 'none';
+      return;
+    }
+
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+
+    document.getElementById('cd-days').textContent  = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-mins').textContent  = String(mins).padStart(2, '0');
+    document.getElementById('cd-secs').textContent  = String(secs).padStart(2, '0');
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // Enter key on name input
+  document.getElementById('input-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addParticipant();
+  });
+
+  // Init
+  const state = loadData();
+  renderParticipants();
+  if (state.calculated) renderResults();
+</script>
+</body>
+</html>
