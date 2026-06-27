@@ -689,6 +689,7 @@
     const nameInput = document.getElementById('input-name');
     const staySelect = document.getElementById('input-stay');
     const name = nameInput.value.trim();
+    const nights = parseInt(staySelect.value) || 7;
     if (!name) {
       nameInput.focus();
       nameInput.style.borderColor = '#c0392b';
@@ -699,7 +700,7 @@
     staySelect.value = '7';
     setLoading(true);
     const data = await loadData();
-    data.participants.push({ name, nights: parseInt(staySelect.value) || 7, paid: false, paidDate: null });
+    data.participants.push({ name, nights, paid: false, paidDate: null });
     data.calculated = false;
     await saveData(data);
     setLoading(false);
